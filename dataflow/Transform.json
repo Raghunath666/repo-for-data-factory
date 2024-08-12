@@ -1,0 +1,124 @@
+{
+	"name": "Transform",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "studenthealth",
+						"type": "DatasetReference"
+					},
+					"name": "studentshealth"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "healthset",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "studentmentalhealth",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1",
+					"description": "where age is above 19"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "split2"
+				},
+				{
+					"name": "split3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Timestamp as string,",
+				"          {Choose your gender} as string,",
+				"          Age as string,",
+				"          {What is your course?} as string,",
+				"          {Your current year of Study} as string,",
+				"          {What is your CGPA?} as string,",
+				"          {Marital status} as string,",
+				"          {Do you have Depression?} as string,",
+				"          {Do you have Anxiety?} as string,",
+				"          {Do you have Panic attack?} as string,",
+				"          {Did you seek any specialist for a treatment?} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> studentshealth",
+				"studentshealth filter(Age>='19') ~> filter1",
+				"filter1 split({Choose your gender}=='Male',",
+				"     disjoint: false) ~> split1@(Male, Female)",
+				"split1@Male select(mapColumn(",
+				"          Course = {What is your course?},",
+				"          {Current year of Study} = {Your current year of Study},",
+				"          { CGPA} = {What is your CGPA?},",
+				"          {Marital status},",
+				"          Depression = {Do you have Depression?},",
+				"          Anxiety = {Do you have Anxiety?},",
+				"          {Panic attack} = {Do you have Panic attack?},",
+				"          {specialist for a treatment} = {Did you seek any specialist for a treatment?}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"split1@Female select(mapColumn(",
+				"          {What is your course?},",
+				"          {Your current year of Study},",
+				"          {What is your CGPA?},",
+				"          {Marital status},",
+				"          {Do you have Depression?},",
+				"          {Do you have Anxiety?},",
+				"          {Do you have Panic attack?},",
+				"          {Did you seek any specialist for a treatment?}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1 split({specialist for a treatment}=='Yes',",
+				"     disjoint: false) ~> split2@(Yes, No)",
+				"select2 split({Did you seek any specialist for a treatment?}=='Yes',",
+				"     disjoint: false) ~> split3@(yes, no)",
+				"split3@no sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          name as string,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'test') ~> sink1",
+				"split2@No sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true) ~> sink2"
+			]
+		}
+	}
+}

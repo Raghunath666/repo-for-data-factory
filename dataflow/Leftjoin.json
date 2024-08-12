@@ -1,0 +1,84 @@
+{
+	"name": "Leftjoin",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText6",
+						"type": "DatasetReference"
+					},
+					"name": "emp",
+					"description": "Import data from emp"
+				},
+				{
+					"dataset": {
+						"referenceName": "DelimitedText7",
+						"type": "DatasetReference"
+					},
+					"name": "dept",
+					"description": "Import data from dept"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ljoutput",
+						"type": "DatasetReference"
+					},
+					"name": "ljoutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select",
+					"description": "Renaming emp to select with columns 'id, name'"
+				},
+				{
+					"name": "leftjoin"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as string,",
+				"          name as string,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> emp",
+				"source(output(",
+				"          deptid as string,",
+				"          deptname as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> dept",
+				"emp select(mapColumn(",
+				"          id,",
+				"          country,",
+				"          department",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select",
+				"select, dept join(department == deptid,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> leftjoin",
+				"leftjoin sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          name as string,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ljoutput"
+			]
+		}
+	}
+}

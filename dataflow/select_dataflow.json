@@ -1,0 +1,77 @@
+{
+	"name": "select_dataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "sleephealths",
+						"type": "DatasetReference"
+					},
+					"name": "sleephealth"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "selecttransform",
+						"type": "DatasetReference"
+					},
+					"name": "output"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selecttransform"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Person ID} as string,",
+				"          Gender as string,",
+				"          Age as string,",
+				"          Occupation as string,",
+				"          {Sleep Duration} as string,",
+				"          {Quality of Sleep} as string,",
+				"          {Physical Activity Level} as string,",
+				"          {Stress Level} as string,",
+				"          {BMI Category} as string,",
+				"          {Blood Pressure} as string,",
+				"          {Heart Rate} as string,",
+				"          {Daily Steps} as string,",
+				"          {Sleep Disorder} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sleephealth",
+				"sleephealth select(mapColumn(",
+				"          {Persons ID} = {Person ID},",
+				"          Gende = Gender,",
+				"          Age,",
+				"          Occupation,",
+				"          sleepduration = {Sleep Duration},",
+				"          {Physical Activity Level},",
+				"          {Stress Level},",
+				"          BP = {Blood Pressure},",
+				"          {Heart Rate},",
+				"          {Sleep Disorder}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selecttransform",
+				"selecttransform sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          name as string,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     partitionFileNames:['selecttranform'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> output"
+			]
+		}
+	}
+}

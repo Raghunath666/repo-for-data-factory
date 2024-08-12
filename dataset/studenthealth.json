@@ -1,0 +1,69 @@
+{
+	"name": "studenthealth",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Student Mental health.csv",
+				"container": "input"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Timestamp",
+				"type": "String"
+			},
+			{
+				"name": "Choose your gender",
+				"type": "String"
+			},
+			{
+				"name": "Age",
+				"type": "String"
+			},
+			{
+				"name": "What is your course?",
+				"type": "String"
+			},
+			{
+				"name": "Your current year of Study",
+				"type": "String"
+			},
+			{
+				"name": "What is your CGPA?",
+				"type": "String"
+			},
+			{
+				"name": "Marital status",
+				"type": "String"
+			},
+			{
+				"name": "Do you have Depression?",
+				"type": "String"
+			},
+			{
+				"name": "Do you have Anxiety?",
+				"type": "String"
+			},
+			{
+				"name": "Do you have Panic attack?",
+				"type": "String"
+			},
+			{
+				"name": "Did you seek any specialist for a treatment?",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

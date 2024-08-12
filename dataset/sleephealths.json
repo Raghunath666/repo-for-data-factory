@@ -1,0 +1,77 @@
+{
+	"name": "sleephealths",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Sleep_health_and_lifestyle_dataset.csv",
+				"container": "input"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Person ID",
+				"type": "String"
+			},
+			{
+				"name": "Gender",
+				"type": "String"
+			},
+			{
+				"name": "Age",
+				"type": "String"
+			},
+			{
+				"name": "Occupation",
+				"type": "String"
+			},
+			{
+				"name": "Sleep Duration",
+				"type": "String"
+			},
+			{
+				"name": "Quality of Sleep",
+				"type": "String"
+			},
+			{
+				"name": "Physical Activity Level",
+				"type": "String"
+			},
+			{
+				"name": "Stress Level",
+				"type": "String"
+			},
+			{
+				"name": "BMI Category",
+				"type": "String"
+			},
+			{
+				"name": "Blood Pressure",
+				"type": "String"
+			},
+			{
+				"name": "Heart Rate",
+				"type": "String"
+			},
+			{
+				"name": "Daily Steps",
+				"type": "String"
+			},
+			{
+				"name": "Sleep Disorder",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

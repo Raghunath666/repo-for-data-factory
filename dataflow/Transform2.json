@@ -1,0 +1,99 @@
+{
+	"name": "Transform2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Healthcaredataset",
+						"type": "DatasetReference"
+					},
+					"name": "Blob",
+					"description": "Import data from Blob "
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText7",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DelimitedText5",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "split2"
+				},
+				{
+					"name": "split3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Name as string,",
+				"          Age as string,",
+				"          Gender as string,",
+				"          {Blood Type} as string,",
+				"          {Medical Condition} as string,",
+				"          {Date of Admission} as string,",
+				"          Doctor as string,",
+				"          Hospital as string,",
+				"          {Insurance Provider} as string,",
+				"          {Billing Amount} as string,",
+				"          {Room Number} as string,",
+				"          {Admission Type} as string,",
+				"          {Discharge Date} as string,",
+				"          Medication as string,",
+				"          {Test Results} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Blob",
+				"Blob derive(Gender = iif(Gender == 'Male', 'M', iif(Gender == 'Female', 'F', 'Other'))) ~> derivedColumn1",
+				"derivedColumn1 filter(!isNull(Age) && Age > '0') ~> filter1",
+				"filter1 derive(Age = iif(Age >= '18' && Age <= '30', 'Teens', iif(Age > '30', 'Old', 'Other'))) ~> derivedColumn2",
+				"derivedColumn2 split(Gender == 'M',",
+				"     disjoint: false) ~> split1@(Male, Female)",
+				"split1@Male split({Admission Type}== 'Emergency',",
+				"     disjoint: true) ~> split2@(AdmissionTypeEmergency, Alltypes)",
+				"split1@Female split({Admission Type}== 'Emergency',",
+				"     disjoint: false) ~> split3@(AdmissiontypeEmergency, All)",
+				"split2@AdmissionTypeEmergency sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          deptid as string,",
+				"          deptname as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true) ~> sink1",
+				"split3@AdmissiontypeEmergency sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true) ~> sink2"
+			]
+		}
+	}
+}

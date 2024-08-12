@@ -1,0 +1,68 @@
+{
+	"name": "sort_flow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "mentalhealth",
+						"type": "DatasetReference"
+					},
+					"name": "mentalhealth"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "mentalhealth",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "sortongender"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Timestamp as string,",
+				"          {Choose your gender} as string,",
+				"          Age as string,",
+				"          {What is your course?} as string,",
+				"          {Your current year of Study} as string,",
+				"          {What is your CGPA?} as string,",
+				"          {Marital status} as string,",
+				"          {Do you have Depression?} as string,",
+				"          {Do you have Anxiety?} as string,",
+				"          {Do you have Panic attack?} as string,",
+				"          {Did you seek any specialist for a treatment?} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> mentalhealth",
+				"mentalhealth sort(asc({Choose your gender}, true),",
+				"     caseInsensitive: true) ~> sortongender",
+				"sortongender sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Timestamp as string,",
+				"          {Choose your gender} as string,",
+				"          Age as string,",
+				"          {What is your course?} as string,",
+				"          {Your current year of Study} as string,",
+				"          {What is your CGPA?} as string,",
+				"          {Marital status} as string,",
+				"          {Do you have Depression?} as string,",
+				"          {Do you have Anxiety?} as string,",
+				"          {Do you have Panic attack?} as string,",
+				"          {Did you seek any specialist for a treatment?} as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink"
+			]
+		}
+	}
+}

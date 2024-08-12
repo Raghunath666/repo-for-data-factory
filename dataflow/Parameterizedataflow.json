@@ -1,0 +1,63 @@
+{
+	"name": "Parameterizedataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "emp12",
+						"type": "DatasetReference"
+					},
+					"name": "employee"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "opemp",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     Cityname as string ('Pune')",
+				"}",
+				"source(output(",
+				"          Education as string,",
+				"          JoiningYear as string,",
+				"          City as string,",
+				"          PaymentTier as string,",
+				"          Age as string,",
+				"          Gender as string,",
+				"          EverBenched as string,",
+				"          ExperienceInCurrentDomain as string,",
+				"          LeaveOrNot as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> employee",
+				"employee filter(City == $Cityname) ~> filter",
+				"filter sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {School DBN} as string,",
+				"          Date as string,",
+				"          Enrolled as string,",
+				"          Absent as string,",
+				"          Present as string,",
+				"          Released as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink"
+			]
+		}
+	}
+}

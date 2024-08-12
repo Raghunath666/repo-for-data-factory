@@ -1,0 +1,45 @@
+{
+	"name": "fruits",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "PurchasedFruits.csv",
+				"container": "input"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ORDER",
+				"type": "String"
+			},
+			{
+				"name": "VENDER",
+				"type": "String"
+			},
+			{
+				"name": "APPLE ",
+				"type": "String"
+			},
+			{
+				"name": "MANGO",
+				"type": "String"
+			},
+			{
+				"name": "ORANGE",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

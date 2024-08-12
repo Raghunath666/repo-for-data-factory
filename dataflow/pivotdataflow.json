@@ -1,0 +1,70 @@
+{
+	"name": "pivotdataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "hcds",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "pivotds",
+						"type": "DatasetReference"
+					},
+					"name": "pivotdata"
+				}
+			],
+			"transformations": [
+				{
+					"name": "pivot1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Name as string,",
+				"          Age as string,",
+				"          Gender as string,",
+				"          {Blood Type} as string,",
+				"          {Medical Condition} as string,",
+				"          {Date of Admission} as string,",
+				"          Doctor as string,",
+				"          Hospital as string,",
+				"          {Insurance Provider} as string,",
+				"          {Billing Amount} as string,",
+				"          {Room Number} as string,",
+				"          {Admission Type} as string,",
+				"          {Discharge Date} as string,",
+				"          Medication as string,",
+				"          {Test Results} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 pivot(groupBy(Age),",
+				"     pivotBy(Gender),",
+				"     {} = count(Doctor),",
+				"     columnNaming: '$N$V',",
+				"     lateral: true,",
+				"     partitionBy('hash', 1)) ~> pivot1",
+				"pivot1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          name as string,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> pivotdata"
+			]
+		}
+	}
+}

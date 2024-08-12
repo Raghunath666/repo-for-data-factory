@@ -1,0 +1,63 @@
+{
+	"name": "Unpivotdataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "fruits",
+						"type": "DatasetReference"
+					},
+					"name": "source"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "purchasefruits",
+						"type": "DatasetReference"
+					},
+					"name": "Sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "unpivot"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ORDER as string,",
+				"          VENDER as string,",
+				"          {APPLE } as string,",
+				"          MANGO as string,",
+				"          ORANGE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source",
+				"source unpivot(output(",
+				"          FRUITS as string,",
+				"          QUANTITY as string",
+				"     ),",
+				"     ungroupBy(ORDER,",
+				"          VENDER),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> unpivot",
+				"unpivot sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          name as string,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     partitionFileNames:['PurchasedFruits'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> Sink"
+			]
+		}
+	}
+}
